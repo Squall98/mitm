@@ -16,8 +16,10 @@ class OngletsMap():
         self.character = character
 
     def print_map(self, maps):
+        print(f"Contenu de maps.cells : {maps.cells}")
         self.Terrain.destroy()
         self.carreau = {}
+        print(f"Nombre de cellules chargées : {len(self.carreau)}")
         self.Terrain = tkinter.Canvas(self.onglet_map,height = self.size_carreau * (maps.height)*2, width = self.size_carreau * (maps.width)*2)
         self.binairemap = []
         self.mapswidth = maps.width
@@ -62,6 +64,7 @@ class OngletsMap():
         maps.mapswidth = self.mapswidth
         maps.sun = self.sun
         maps.resource = self.resource
+        print(f"Nombre de cellules chargées : {len(self.carreau)}")
 
     def create_binary_map(self,cell,liste2):
         if cell.color == 'yellow':

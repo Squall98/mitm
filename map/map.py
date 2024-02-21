@@ -85,9 +85,10 @@ class Map():
         # Après le décryptage des données de la carte
         if map_data_encrypted:
             map_data_decrypted = self.decrypt_mapdata(map_data_encrypted, decryption_key)
-            print("Decrypted MapData :", map_data_decrypted)
+            # Après avoir déchiffré les données, utilisez-les pour créer des objets Cell.
+            self.create_cells_from_decrypted_data(map_data_decrypted)
         else:
-            print("No MapData found or decryption key is missing.")
+            print("Aucune donnée de carte trouvée ou la clé de décryptage manquante.")
             self.cells = []
 
         pos = MAPID_TO_POS.get(mapID, (None, None))
@@ -108,3 +109,28 @@ class Map():
             if i < 100:  # Limite l'affichage aux premiers caractères pour éviter une sortie trop longue
                 print(f"Caractère décodé: {decoded_char}")  # Affiche les caractères décodés
         return data
+
+    def create_cells_from_decrypted_data(self, decrypted_data):
+        # Supposons que decrypted_data est une chaîne de caractères où chaque cellule est représentée par 10 caractères.
+        cell_length = 10  # Longueur des données pour une cellule
+
+        # Convertis les données déchiffrées en une liste de segments, chaque segment correspondant aux données d'une cellule.
+        cell_data_segments = [decrypted_data[i:i + cell_length] for i in range(0, len(decrypted_data), cell_length)]
+
+        # Réinitialise la liste des cellules.
+        self.cells = []
+
+        # Itère sur chaque segment pour créer et ajouter des objets Cell.
+        for index, cell_data in enumerate(cell_data_segments):
+            # Convertis les données brutes de la cellule.
+            cell_info = [ord(c) for c in cell_data]
+
+            # Extrait les informations spécifiques nécessaires pour créer l'objet Cell.
+            CellID = 0  # Supposons que vous avez une manière de déterminer l'ID de chaque cellule
+            for cell_data in cell_data_segments:
+                # Convertissez cell_data en chaîne si ce n'est pas déjà le cas
+                cell_data_str = str(cell_data)  # Assurez-vous que cell_data est une chaîne
+                # Passez la chaîne convertie à Cell
+                new_cell = Cell(cell_data_str, CellID)
+                self.cells.append(new_cell)
+                CellID += 1
