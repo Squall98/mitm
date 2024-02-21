@@ -50,6 +50,9 @@ class OngletsMap():
                 i = 0.5
             self.create_binary_map(cell,liste2)
             self.carreau[cell.CellID] = {"carreau":self.Terrain.create_rectangle(i*self.size_carreau*2,j*self.size_carreau,(i+1)*self.size_carreau*2,(j+1)*self.size_carreau,fill = cell.color), "cell" :cell}
+            # Ajout de l'ID de la cellule sur la carte
+            self.Terrain.create_text(i * self.size_carreau * 2 + self.size_carreau,
+                                     j * self.size_carreau + self.size_carreau / 2, text=str(cell.CellID), fill="black")
 
             liste.append(cell.CellID)
             
