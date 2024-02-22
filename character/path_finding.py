@@ -1,37 +1,30 @@
-
 import numpy
-import heapq
-import matplotlib.pyplot as plt
+import heapq  # Utilisé pour la file de priorité
+import matplotlib.pyplot as plt  # Pour les visualisations, non utilisé directement dans la fonction A*
 from matplotlib.pyplot import figure
 
-# heuristic function for path scoring
-
-
-
-
-def heuristic(a, b):
+# Fonction heuristique pour estimer la distance au but
+def heuristic(a,b):
+    # Utilise la distance euclidienne comme heuristique
     return numpy.sqrt((b[0] - a[0]) ** 2 + (b[1] - a[1]) ** 2)
-
 
 # path finding function
 
-def astar(array, start, goal, combat = False):
+# Fonction de recherche de chemin A*
+# Fonction de recherche de chemin A*
+def astar(array, start, goal, combat=False):
+    # Si en mode combat, utilise un ensemble de voisins différent
     if combat:
-        # original one
         neighbors = [(-1, -1), (-1, 1), (1, -1), (1, 1)]
+        odd_neighbors = [(0, 1), (0, -1), (1, 1), (1, -1)]
+        pair_neighbors = [(0, 1), (0, -1), (-1, 1), (-1, -1)]
+    else:
+        # Ensemble de voisins pour la navigation normale
+        neighbors = [(0, 1), (0, -1), (1, 0), (-1, 0), (1, 1), (1, -1), (-1, 1), (-1, -1), (0, 2), (0, -2)]
+        odd_neighbors = [(0, 1), (0, -1), (1, 0), (-1, 0), (1, 1), (1, -1), (0, 2), (0, -2)]
+        pair_neighbors = [(0, 1), (0, -1), (1, 0), (-1, 0), (-1, 1), (-1, -1), (0, 2), (0, -2)]
 
-        # based on y value
-        odd_neighbors =  [(0, 1), (0, -1),(1, 1), (1, -1)] # non (1,0)
-        pair_neighbors = [(0, 1), (0, -1),(-1, 1), (-1, -1)]
-    else:#(-1, 1),(-1, -1)
-        # original one
-        neighbors = [(0, 1), (0, -1), (1, 0), (-1, 0), (1, 1), (1, -1), (-1, 1), (-1, -1),(0 ,2), (0, -2)]
-
-        # based on y value
-        odd_neighbors = [(0, 1), (0, -1), (1, 0), (-1, 0), (1, 1), (1, -1),(0 ,2), (0, -2)]
-        pair_neighbors = [(0, 1), (0, -1), (1, 0), (-1, 0), (-1, 1), (-1, -1),(0 ,2), (0, -2)]
-
-
+    # Initialisations pour l'algorithme A*
     close_set = set()
     came_from = {}
     gscore = {start: 0}
@@ -41,20 +34,20 @@ def astar(array, start, goal, combat = False):
     heapq.heappush(oheap, (fscore[start], start))
 
     while oheap:
-
         current = heapq.heappop(oheap)[1]
 
         if current == goal:
+            # Reconstruit le chemin en remontant à partir du but
             data = []
             while current in came_from:
                 data.append(current)
                 current = came_from[current]
             data.append(start)
-            data = data[::-1]
-            return data
+            return data[::-1]  # Retourne le chemin inversé
 
         close_set.add(current)
 
+        # Sélectionne le bon ensemble de voisins en fonction de la parité de la ligne
         if current[1] % 2 == 0:
             pimp_neighbors = pair_neighbors
         else:
@@ -97,14 +90,6 @@ def astar(array, start, goal, combat = False):
                 heapq.heappush(oheap, (fscore[neighbor], neighbor))
 
     return False
-
-
-
-
-
-
-
-#import app.tools.crypt as Crypt
 
 def from_array_map_to_numpy(map_array, width_):
 

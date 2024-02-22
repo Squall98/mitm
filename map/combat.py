@@ -110,7 +110,7 @@ class Combat:
 
 
         return
-        path = os.getcwd()+"\\resource\\spells.xml"
+        path = os.getcwd()+"/resource/spells.xml"
         for spell in spells_id:
             for spell in tree.xpath("/SPELLS/SPELL"):
                 if spell == spell.get("ID"):
