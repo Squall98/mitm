@@ -61,7 +61,7 @@ class MainInterface(threading.Thread):
 
     def launch(self):
         self.main = tkinter.Tk()
-        self.main.title("LeafBot")
+        self.main.title("Squall-BBD")
         self.main.geometry('1200x900')
         self.create_notebook()
         self.main.mainloop()
