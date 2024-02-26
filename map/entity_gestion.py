@@ -1,64 +1,54 @@
 import copy
 
-class EntityGestion():
 
+class EntityGestion:
     def __init__(self, interface):
         self.map = interface.ongletsMap
         self.character = self.map.character
-        self.entity = []
+        self.entities = []
 
+    def clear_entities(self):
+        for cell in self.map.cells:
+            cell.clear_entities()
+        self.entities.clear()
 
-
-    def remove_all_entity(self,map):
-        self.entity = []
-        for cell in map.cells:
-            cell.entity = []
-            cell.set_default_color()
-                    
     def add_entity(self, entity):
-        cell = self.map.carreau[entity.cell]
-        if entity in cell["cell"].entity:
-            self.remove_entity(cell,entity)
-        cell["cell"].set_entity(entity, True)
-        self.map.Terrain.itemconfigure(cell["carreau"], fill=cell["cell"].color)
-        if self.character.id_ == str(entity.id):
-            self.character.set_cell(cell["cell"])
-            self.character.entity = entity 
-        self.character.map.entity.append(entity)
-        self.entity.append(entity)
+        cell = self.character.map.find_cell_by_id(entity.cell)
+        if entity not in cell.entities:
+            cell.add_entity(entity)
+            self.entities.append(entity)
+            if self.character.id_ == entity.id:
+                self.character.cell = cell
+                self.character.entity = entity
 
+    def remove_entity(self, entity):
+        cell = self.character.map.find_cell_by_id(entity.cell)
+        cell.remove_entity(entity)
+        self.entities.remove(entity)
 
-    def remove_entity(self,cell, entity):
-        cell["cell"].set_entity(entity, False)
-        self.map.Terrain.itemconfigure(cell["carreau"], fill=cell["cell"].color)
-        self.character.map.entity.remove(entity)
-        self.entity.remove(entity)
-
-
-    def update_entity(self, entity_id, end_cell, update_cara = False):
-        for cle,cell in self.map.carreau.items():
-            if cell["cell"].entity != []:
-                entity = cell["cell"].get_entity(entity_id)
-                if entity:
-                    if update_cara:
-                        return entity
-                    self.remove_entity(cell,entity)
-                    if end_cell:
-                        entity.cell = end_cell
-                        self.add_entity(copy.copy(entity))
-                    
-
-    def update_carac_entity(self,entity_id,vie,pa,pm,cell_id,vie_max):
-        entity = self.update_entity(int(entity_id), int(cell_id), True)
+    def update_entity_position(self, entity_id, new_cell_id):
+        entity = self.find_entity_by_id(entity_id)
         if entity:
-            entity.vie = vie 
-            entity.pa = pa
-            entity.pm = pm
-            entity.cell = cell_id
-            print(entity.__dict__)
+            old_cell = self.character.map.find_cell_by_id(entity.cell)
+            new_cell = self.character.map.find_cell_by_id(new_cell_id)
+            if old_cell:
+                old_cell.remove_entity(entity)
+            if new_cell:
+                new_cell.add_entity(entity)
+                entity.cell = new_cell_id
 
-    def update_interactive(self,cell_id, good = False):
-        cell = self.map.carreau[cell_id]
-        cell["cell"].set_not_interactive(good)
-        self.map.Terrain.itemconfigure(cell["carreau"], fill=cell["cell"].color)
-        #self.character.map.resource.append(cell_id)
+    def update_entity_stats(self, entity_id, vie, pa, pm, vie_max):
+        entity = self.find_entity_by_id(entity_id)
+        if entity:
+            entity.update_stats(vie, pa, pm, vie_max)
+
+    def find_entity_by_id(self, entity_id):
+        for entity in self.entities:
+            if entity.id == entity_id:
+                return entity
+        return None
+
+    def update_interactive_status(self, cell_id, is_interactive):
+        cell = self.character.map.find_cell_by_id(cell_id)
+        if cell:
+            cell.is_interactive = is_interactive
