@@ -19,7 +19,6 @@ class OngletsMap():
         print(f"Contenu de maps.cells : {maps.cells}")
         self.Terrain.destroy()
         self.carreau = {}
-        print(f"Nombre de cellules chargées : {len(self.carreau)}")
         self.Terrain = tkinter.Canvas(self.onglet_map,height = self.size_carreau * (maps.height)*2, width = self.size_carreau * (maps.width)*2)
         self.binairemap = []
         self.mapswidth = maps.width
@@ -59,7 +58,6 @@ class OngletsMap():
             #liste.append({cell.CellID:self.Terrain.create_rectangle(i*self.size_carreau*2,j*self.size_carreau,(i+1)*self.size_carreau*2,(j+1)*self.size_carreau,fill = cell.color),"cell":cell})
             i += 1
         self.Terrain.bind('<ButtonRelease>',self.clic)
-
         Coord = tkinter.Label(self.onglet_map)
         Coord.pack(pady='10px')
         maps.binairemap = self.binairemap
@@ -67,7 +65,11 @@ class OngletsMap():
         maps.mapswidth = self.mapswidth
         maps.sun = self.sun
         maps.resource = self.resource
+        for resource_id in self.resource:
+            resource_cell = self.carreau[resource_id]['cell']
+            print(f"ID de ressource : {resource_id}, Détails : {resource_cell.__dict__}")
         print(f"Nombre de cellules chargées : {len(self.carreau)}")
+        print(f"nombre de ressources : {len(self.resource)}")
 
     def create_binary_map(self,cell,liste2):
         if cell.color == 'yellow':
@@ -92,12 +94,13 @@ class OngletsMap():
             j-= 1
         cell_ID = self.getcell[i][j]
         if self.carreau[cell_ID]:
-            #print(self.carreau[cell_ID]["cell"].__dict__)
+            print(self.carreau[cell_ID]["cell"].__dict__)
             if self.carreau[cell_ID]["cell"].isInteractive:
                 job.recole(self.character,cell_ID)
             elif not self.character.deplacement.ismouving and not self.character.isharvest:
                 self.character.deplacement.deplacement(self.character.cell.CellID, cell_ID, self.mapswidth, self.carreau, self.binairemap, self.sun, self.resource)
             else: print("Deja en mouvement...")
+            print(f"Clic sur cellule ID: {cell_ID}, Interactive: {self.carreau[cell_ID]['cell'].isInteractive}")
 
 
 

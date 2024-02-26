@@ -1,0 +1,4 @@
+[console_scripts]
+fritm-hook = fritm.hook:_main_hook
+fritm-spawn = fritm.hook:_main_spawn
+
