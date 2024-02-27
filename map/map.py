@@ -118,6 +118,5 @@ class Map():
         # Convertis les données déchiffrées en une liste de segments, chaque segment correspondant aux données d'une cellule.
         cell_data_segments = [decrypted_data[i:i + cell_length] for i in range(0, len(decrypted_data), cell_length)]
 
-
         # Utilisez une compréhension de liste pour créer les objets Cell et les ajouter à la liste self.cells.
         self.cells = [Cell(str(cell_data), CellID) for CellID, cell_data in enumerate(cell_data_segments)]

@@ -39,14 +39,14 @@ def recole(character, cell):
 
 def get_close_cell(map, cell, bad_cell):
     endcell = from_cell_id_to_x_y_pos(cell, map.mapswidth)
-    close_cell = (1000,None)
+    close_cell = (1000, None)
     for i in range(len(map.binairemap)):
         for j in range(len(map.binairemap[i])):
-            distance = heuristic((j,i),endcell)
+            distance = heuristic((j, i), endcell)
             if i % 2 == 0:
                 distance -= 0.5
-            if endcell != (j,i) and distance < close_cell[0] and (distance,(i,j)) not in bad_cell:
-                    close_cell = (distance,(i,j))
+            if endcell != (j, i) and distance < close_cell[0] and (distance, (i, j)) not in bad_cell:
+                close_cell = (distance, (i, j))
     print(from_pos_x_y_to_cell_id(close_cell[1][1], close_cell[1][0], map.mapswidth))
     return close_cell
 
@@ -62,6 +62,4 @@ def get_id(id):
 
 
 if __name__ == "__main__":
-
-      
     print(get_id(7500))

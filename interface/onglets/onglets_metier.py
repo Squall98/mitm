@@ -28,23 +28,3 @@ class OngletsMetier:
         else:
             self.bouton_recolte.config(text="Activer la récolte automatique")
             # Ici, vous devrez implémenter la logique pour arrêter la récolte automatique
-
-    def recolter_ressource_ble(self):
-        # ID de la ressource Blé
-        id_ressource_ble = 7515
-
-        # Si la récolte automatique est activée, continuer à récolter
-        while self.recolte_auto_active:
-            # Parcourir chaque cellule de la carte
-            for cell in self.character.map.carreau.values():
-                if cell["cell"].layerObject2Num == id_ressource_ble:
-                    # Vérifier que la cellule contient la ressource de Blé
-                    id_recolte = get_id(cell["cell"].layerObject2Num)
-                    if id_recolte[0] == str(id_ressource_ble):
-                        # Effectuer la récolte
-                        recole(self.character, cell["cell"].CellID)
-                        print(f"Ressource de blé récoltée à la cellule {cell['cell'].CellID}")
-                        return
-            print("Aucune ressource de blé trouvée sur la carte.")
-            # Ajouter un délai entre les tentatives de récolte pour éviter de surcharger le serveur
-            tkinter.sleep(5)  # Attendre 5 secondes avant de réessayer

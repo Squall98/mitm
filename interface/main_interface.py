@@ -42,7 +42,7 @@ class MainInterface(threading.Thread):
         threading.Thread(target=self.recolter_ressource).start()
 
     def recolter_ressource(self):
-        id_ressource_ble = 7511  # L'ID de la ressource à récolter
+        id_ressource_ble = 7515  # L'ID de la ressource à récolter
         while self.recolte_auto_active:
             for cell_id, cell_info in self.character.map.carreau.items():
                 # Vérifie si la cellule contient la ressource cible et si elle est interactive
@@ -50,7 +50,7 @@ class MainInterface(threading.Thread):
                     # Tente de récolter la ressource
                     success = recole(self.character, cell_id)
                     if success:
-                        print(f"Ressource de blé récoltée à la cellule {cell_id}")
+                        print(f"Ressource récoltée à la cellule {cell_id}")
                     else:
                         print("La récolte a échoué.")
                     break  # Sort de la boucle après avoir tenté de récolter une ressource
