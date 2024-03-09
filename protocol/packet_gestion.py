@@ -49,8 +49,8 @@ class PacketGestion():
         # Traitement des informations de la carte
         elif packet[:3] == "GDM":
             data = packet.split("|")
-            mapID, map_date, decryption_key = data[1], data[2], data[3]
-            self.character.map.data(mapID, map_date, decryption_key)
+            mapID, map_date = data[1], data[2]  # Suppression de la référence à decryption_key
+            self.character.map.data(mapID, map_date)  # Mise à jour de l'appel à la méthode .data
             self.interface.ongletsMap.print_map(self.character.map)
 
         # Gestion des entités sur la carte
@@ -72,5 +72,5 @@ class PacketGestion():
             elif packet[:3] == "GTS":
                 data = packet[3:].split("|")
                 if data[0] == self.character.id_:
-                    print("debut du tour...")
+                    print("ID030""debut du tour...")
                     threading.Thread(None, self.combat.fight).start()

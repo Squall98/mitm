@@ -287,8 +287,8 @@ if __name__ == "__main__":
     y = [(8,22),(8,23),(8,24),(8,25),(8,26)]#astar(z,a,b,False)
     if y != False:
         for cell in y:
-            print(cell[0],cell[1],from_pos_x_y_to_cell_id(cell[0],cell[1],15))
-        print(y[:5])
+            print("ID006" ,cell[0],cell[1],from_pos_x_y_to_cell_id(cell[0],cell[1],15))
+        print("ID007" ,y[:5])
         pa = convert_astar_path_to_dofus_path(y,15)
 
 

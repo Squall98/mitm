@@ -1,7 +1,7 @@
-from map.contants import *
-import yaswfp.swfparser as swfparser
-from map.cell import Cell
+import xml.etree.ElementTree as ET
 from urllib.parse import unquote
+from map.contants import *
+from map.cell import Cell
 
 class Map():
 
@@ -15,108 +15,69 @@ class Map():
         self.entity = []
         self.resource = []
 
-    def extract_info(self, tags):
+    def extract_info_from_xml(self, xml_path):
+        # Parse le fichier XML
+        tree = ET.parse(xml_path)
+        root = tree.getroot()
+
+        # Cr�e un dictionnaire pour stocker les informations extraites
         info = {
-            'ID': None, 'Width': None, 'Height': None, 'BackgroundNum': None,
-            'AmbianceId': None, 'MusicId': None, 'Capabilities': None
+            'ID': root.findtext('ID'),
+            'Width': int(root.findtext('ANCHURA')),
+            'Height': int(root.findtext('ALTURA')),
+            'X': int(root.findtext('X')),
+            'Y': int(root.findtext('Y')),
+            'MapData': root.findtext('MAPA_DATA')
         }
-        constant_pool = None
-        for tag in tags:
-            if hasattr(tag, 'Actions'):
-                for action in tag.Actions:
-                    if action.name == "ActionConstantPool":
-                        constant_pool = action.ConstantPool
-                    elif action.name == "ActionPush" and hasattr(action, 'Integer'):
-                        value = action.Integer
-                        next_action_index = tag.Actions.index(action) + 1
-                        if next_action_index < len(tag.Actions):
-                            next_action = tag.Actions[next_action_index]
-                            if next_action.name == "ActionSetVariable":
-                                if info['ID'] is None:
-                                    info['ID'] = value
-                                elif info['Width'] is None:
-                                    info['Width'] = value
-                                elif info['Height'] is None:
-                                    info['Height'] = value
-                                elif info['BackgroundNum'] is None:
-                                    info['BackgroundNum'] = value
-                                elif info['AmbianceId'] is None:
-                                    info['AmbianceId'] = value
-                                elif info['MusicId'] is None:
-                                    info['MusicId'] = value
-                                elif info['Capabilities'] is None:
-                                    info['Capabilities'] = value
+
         return info
 
-    def extract_map_data(self, tags):
-        for tag in tags:
-            if hasattr(tag, 'Actions'):
-                for action in tag.Actions:
-                    if action.name == "ActionConstantPool":
-                        constant_pool = action.ConstantPool
-                        if 'mapData' in constant_pool:
-                            map_data_index = constant_pool.index('mapData') + 1
-                            if map_data_index < len(constant_pool):
-                                map_data = constant_pool[map_data_index]
-                                print("mapData trouvé:", map_data)
-                                return map_data
-        #print("mapData n'a pas été trouvé.")
-        return None
+    def extract_map_data_from_xml(self, xml_path):
+        # Parse le fichier XML
+        tree = ET.parse(xml_path)
+        root = tree.getroot()
 
-    def data(self, mapID, map_date, decryption_key):
+        # Extrayez les donn�es de la carte � partir de la balise MAPA_DATA
+        map_data = root.findtext('MAPA_DATA')
+        if map_data:
+            print("mapData trouve:", map_data)
+            return map_data
+        else:
+            print("mapData n'a pas ete trouve.")
+            return None
+
+    def data(self, mapID, map_date):
         self.mapID = mapID
         self.map_date = map_date
-        self.decryption_key = decryption_key
-        MAP_DIR = (PATH + "/data/maps")
-        self.path = f'{MAP_DIR}/{mapID}_{map_date}{"X" if decryption_key else ""}.swf'
-        #print("Ouverture du fichier SWF :", self.path)
+        # Mettez � jour le chemin pour pointer vers le fichier XML dans le r�pertoire 'maps'
+        self.path = f'./resource/maps/{mapID}.xml'
+        print("Ouverture du fichier XML :", self.path)
 
-        swf = swfparser.parsefile(self.path)
-        info = self.extract_info(swf.tags)
-        map_data_encrypted = self.extract_map_data(swf.tags)
-
+        # Utilisez la fonction pour extraire les informations et les donn�es de la carte
+        info = self.extract_info_from_xml(self.path)
         self.width = info.get('Width')
         self.height = info.get('Height')
+        map_data = info.get('MapData')
 
-        #print("Width :", self.width)
-        #print("Height :", self.height)
-        #print("Encrypted MapData :", map_data_encrypted)
+        print("Width :", self.width)
+        print("Height :", self.height)
+        print("MapData :", map_data)
 
-        # Après le décryptage des données de la carte
-        if map_data_encrypted:
-            map_data_decrypted = self.decrypt_mapdata(map_data_encrypted, decryption_key)
-            # Après avoir déchiffré les données, utilisez-les pour créer des objets Cell.
-            self.create_cells_from_decrypted_data(map_data_decrypted)
+        # Traitez les donn�es de la carte pour cr�er des objets Cell
+        if map_data:
+            self.create_cells_from_map_data(map_data)
         else:
-            # print("Aucune donnée de carte trouvée ou la clé de décryptage manquante.")
+            print("Aucune donne de carte trouve.")
             self.cells = []
 
-        pos = MAPID_TO_POS.get(mapID, (None, None))
-        self.x = pos[0]
-        self.y = pos[1]
+        self.x = int(info.get('X'))
+        self.y = int(info.get('Y'))
 
-    def decrypt_mapdata(self, raw_data, raw_key):
-        key = unquote(''.join([chr(int(raw_key[i:i + 2], 16)) for i in range(0, len(raw_key), 2)]))
-        # print(f"Clé de décryptage: {key}")  # Affiche la clé de décryptage après conversion
-        checksum = int(HEX_CHARS[sum(map(lambda x: ord(x) & 0xf, key)) & 0xf], 16) * 2
-        # print(f"Checksum calculé: {checksum}")  # Affiche le checksum calculé
-        key_length = len(key)
-        # print(f"Longueur de la clé: {key_length}")  # Affiche la longueur de la clé
-        data = ''
-        for i in range(0, len(raw_data), 2):
-            decoded_char = chr(int(raw_data[i:i + 2], 16) ^ ord(key[(int(i / 2) + checksum) % key_length]))
-            data += decoded_char
-            if i < 100:  # Limite l'affichage aux premiers caractères pour éviter une sortie trop longue
-                pass
-        # print(f"Caractère décodé: {decoded_char}")   Affiche les caractères décodés
-        return data
+    def create_cells_from_map_data(self, map_data):
+        # D�coupez les donn�es de la carte en blocs de 10 caract�res, chaque bloc repr�sentant une cellule
+        cell_data_blocks = [map_data[i:i + 10] for i in range(0, len(map_data), 10)]
 
-    def create_cells_from_decrypted_data(self, decrypted_data):
-        # Supposons que decrypted_data est une chaîne de caractères où chaque cellule est représentée par 10 caractères.
-        cell_length = 10  # Longueur des données pour une cellule
+        # Cr�ez des objets Cell pour chaque bloc de donn�es
+        self.cells = [Cell(block, CellID) for CellID, block in enumerate(cell_data_blocks)]
 
-        # Convertis les données déchiffrées en une liste de segments, chaque segment correspondant aux données d'une cellule.
-        cell_data_segments = [decrypted_data[i:i + cell_length] for i in range(0, len(decrypted_data), cell_length)]
 
-        # Utilisez une compréhension de liste pour créer les objets Cell et les ajouter à la liste self.cells.
-        self.cells = [Cell(str(cell_data), CellID) for CellID, cell_data in enumerate(cell_data_segments)]

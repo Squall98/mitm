@@ -8,8 +8,6 @@ from interface.onglets.onglets_sorts import OngletsSorts
 import threading
 import time
 from character.job import recole, get_id
-from character.job import get_close_cell, from_cell_id_to_x_y_pos
-
 app_running = True
 
 
@@ -42,7 +40,7 @@ class MainInterface(threading.Thread):
         threading.Thread(target=self.recolter_ressource).start()
 
     def recolter_ressource(self):
-        id_ressource_ble = 7515  # L'ID de la ressource à récolter
+        id_ressource_ble = 7500  # L'ID de la ressource à récolter
         while self.recolte_auto_active:
             for cell_id, cell_info in self.character.map.carreau.items():
                 # Vérifie si la cellule contient la ressource cible et si elle est interactive
@@ -55,7 +53,7 @@ class MainInterface(threading.Thread):
                         print("La récolte a échoué.")
                     break  # Sort de la boucle après avoir tenté de récolter une ressource
                 # Ajoutez un délai pour éviter de surcharger le serveur ou l'interface utilisateur
-                time.sleep(1)
+                # time.sleep(1)
 
     def set_character(self, character):
         global app_running

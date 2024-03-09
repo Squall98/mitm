@@ -33,7 +33,7 @@ def recole(character, cell):
         character.socket_to_server.send((packet + "\n\x00").encode())
         return True
     else:
-        print("Monster on cell")
+        print("ID004""Monster on cell")
         return False
 
 
@@ -47,12 +47,18 @@ def get_close_cell(map, cell, bad_cell):
                 distance -= 0.5
             if endcell != (j, i) and distance < close_cell[0] and (distance, (i, j)) not in bad_cell:
                 close_cell = (distance, (i, j))
-    print(from_pos_x_y_to_cell_id(close_cell[1][1], close_cell[1][0], map.mapswidth))
+    print("ID004" ,from_pos_x_y_to_cell_id(close_cell[1][1], close_cell[1][0], map.mapswidth))
     return close_cell
 
 
+printed_cwd = False
+
 def get_id(id):
-    print(os.getcwd())
+    global printed_cwd
+    if not printed_cwd:
+        print("ID005", os.getcwd())
+        printed_cwd = True
+
     with open("./recoltes.txt", "r") as f:
         contenu = f.read()
     for ligne in contenu.split():
@@ -60,6 +66,9 @@ def get_id(id):
         if ligne[0] == str(id):
             return ligne
 
+    return None
+
+
 
 if __name__ == "__main__":
-    print(get_id(7500))
+    print("ID105" ,get_id(7500))

@@ -2,7 +2,7 @@ from map.contants import *
 
 
 def unhash_cell(raw_cell):
-    # print(f"Raw cell data: {raw_cell}")  # Ajout d'un print pour le débogage
+    print(f"Raw cell data: {raw_cell}")  # Ajout d'un print pour le débogage
     return [ZKARRAY.index(i) for i in raw_cell]
 
 

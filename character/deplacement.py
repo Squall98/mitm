@@ -39,10 +39,10 @@ class Deplacement():
 
 
     def wait(self,dofus_path, run_timing, last_cell):
-        print(f"Depacement du personnage vers {last_cell} (temps {run_timing})")
+        print("ID002"f"Depacement du personnage vers {last_cell} (temps {run_timing})")
         packet = "GA001"+dofus_path[0]+"\n\x00"
         self.socket_to_server.send(packet.encode())
         time.sleep(run_timing)
         self.socket_to_server.send(("GKK0"+"\n\x00").encode())
         self.ismouving = False
-        print(f"Fin du depacement")
+        print("ID003"f"Fin du depacement")
