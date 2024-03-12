@@ -4,27 +4,29 @@ from tkinter import ttk
 
 
 class OngletsMetier:
+
     def __init__(self, main_onglets):
         self.onglets_metier = ttk.Frame(main_onglets)
-        self.onglets_metier.pack()
-        main_onglets.add(self.onglets_metier, text='Metier')
+        self.onglets_metier.pack(expand=True, fill='both')
+        main_onglets.add(self.onglets_metier, text='Métier')
 
-        # Ajout d'un attribut pour suivre l'état de la récolte automatique
-        self.recolte_auto_active = False
+        # Menu déroulant pour la sélection du métier
+        self.selected_metier = tk.StringVar(self.onglets_metier)
+        self.metiers = ['Boulanger', 'Forgeron', 'Alchimiste', 'Paysan']
+        self.selected_metier.set(self.metiers[0])  # par défaut
 
-        # Ajout d'un bouton pour activer/désactiver la récolte automatique
-        self.bouton_recolte = tkinter.Button(self.onglets_metier, text="Activer la récolte automatique",
-                                             command=self.toggle_recolte_auto)
-        self.bouton_recolte.pack()
+        self.menu_metier = tk.OptionMenu(self.onglets_metier, self.selected_metier, *self.metiers)
+        self.menu_metier.pack(pady=10)
 
-    def toggle_recolte_auto(self):
-        # Changer l'état de la récolte automatique
-        self.recolte_auto_active = not self.recolte_auto_active
+        # Bouton pour activer/désactiver l'action du métier
+        self.bouton_action_metier = tk.Button(self.onglets_metier, text="Activer action", command=self.toggle_action_metier)
+        self.bouton_action_metier.pack(pady=10)
 
-        # Mettre à jour le texte du bouton en fonction de l'état
-        if self.recolte_auto_active:
-            self.bouton_recolte.config(text="Désactiver la récolte automatique")
-            self.recolter_ressource_ble()  # Lancer la récolte automatique
-        else:
-            self.bouton_recolte.config(text="Activer la récolte automatique")
-            # Ici, vous devrez implémenter la logique pour arrêter la récolte automatique
+        # État de l'action du métier
+        self.etat_action_metier = tk.Label(self.onglets_metier, text="Aucune action active", fg="red")
+        self.etat_action_metier.pack(pady=10)
+
+    def toggle_action_metier(self):
+        # Ici, tu peux ajouter la logique pour activer ou désactiver l'action de métier
+        pass
+
