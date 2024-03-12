@@ -24,34 +24,8 @@ class MainInterface(threading.Thread):
             time.sleep(1)
             if self.ongletsSorts:
                 break
-                # Ajout du bouton de récolte automatique
-        self.bouton_recolte_auto = tk.Button(self.main, text="Activer récolte auto", command=self.toggle_recolte_auto)
-        self.bouton_recolte_auto.pack()
-        self.recolte_auto_active = False
+        # Le bouton de récolte automatique a été retiré.
 
-    def toggle_recolte_auto(self):
-        self.recolte_auto_active = not self.recolte_auto_active
-        self.bouton_recolte_auto["text"] = "Désactiver la récolte automatique" if self.recolte_auto_active else "Activer la récolte automatique"
-        if self.recolte_auto_active:
-            self.start_recolte_auto()
-
-    def start_recolte_auto(self):
-        # Lancez la récolte dans un thread pour éviter de bloquer l'interface utilisateur
-        threading.Thread(target=self.recolter_ressource).start()
-
-    def recolter_ressource(self):
-        id_ressource_ble = 7500  # L'ID de la ressource à récolter
-        while self.recolte_auto_active:
-            for cell_id, cell_info in self.character.map.carreau.items():
-                # Vérifie si la cellule contient la ressource cible et si elle est interactive
-                if cell_info["cell"].layerObject2Num == id_ressource_ble and cell_info["cell"].isInteractive:
-                    # Tente de récolter la ressource
-                    success = recole(self.character, cell_id)
-                    if success:
-                        print(f"Ressource récoltée à la cellule {cell_id}")
-                    else:
-                        print("La récolte a échoué.")
-                    break  # Sort de la boucle après avoir tenté de récolter une ressource
                 # Ajoutez un délai pour éviter de surcharger le serveur ou l'interface utilisateur
                 # time.sleep(1)
 
